@@ -1,0 +1,900 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"> 
+	<xs:element name="ADRESSE" type="ADRESSEtype"/>
+	<xs:element name="CRITERIA" type="CRITERIAtype"/>
+	<xs:element name="PRICE" type="PRICEtype"/> 
+	<xs:element name="BUDGET" type="BUDGETtype"/>
+	<xs:element name="AVAILIBILITY" type="AVAILIBILITYtype"/>
+	<xs:element name="SURFACE" type="SURFACEtype"/> 
+	<xs:element name="ELEVATOR" type="ELEVATORtype"/>
+	<xs:element name="EXTERIORS" type="EXTERIORStype"/> 
+	<xs:element name="PARKING" type="PARKINGtype"/>
+	<xs:element name="LOGISTICS" type="LOGISTICStype"/>
+	<xs:element name="IMMOPRICE" type="IMMOPRICEtype"/> 
+	<xs:element name="IMMOADRESS" type="IMMOADRESStype"/>
+	<xs:element name="DESCRIPTIF" type="DESCRIPTIFtype"/>
+	<xs:element name="IMMOAVAILIBILITY" type="IMMOAVAILIBILITYtype"/> 
+	<xs:element name="IMMOSURFACE" type="IMMOSURFACEtype"/>
+	<xs:element name="IMMOELEVATOR" type="IMMOELEVATORtype"/>
+	<xs:element name="IMMOEXTERIORS" type="IMMOEXTERIORStype"/>
+	<xs:element name="IMMOPARKING" type="IMMOPARKINGtype"/>
+	<xs:element name="IMMOLOGISTICS" type="IMMOLOGISTICStype"/> 
+	<xs:element name="SUPPLIERADRESSE" type="SUPPLIERADRESSEtype"/>
+	<xs:element name="SELLERADRESSE" type="SELLERADRESSEtype"/> 
+
+
+
+	<xs:element name="ESTATEPLATEFORME">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="PROSPECTS" maxOccurs="1"/>
+            <xs:element ref="IMMOPRODUCTS" maxOccurs="1"/>
+            <xs:element ref="SUPPLIERS" maxOccurs="1"/>
+            <xs:element ref="SELLERS" maxOccurs="1"/>
+            <xs:element ref="TRANSACTIONS" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+	<!-- Keyref creation-->
+	<!-- https://learn.microsoft.com/fr-fr/dotnet/framework/data/adonet/dataset-datatable-dataview/map-keyref-xml-schema-xsd-constraints-to-dataset-constraints -->
+	<!-- "xs:field xpath=x" needs to be in the ref list "refer=y" for x to exist-->
+
+	<xs:key name="key_SELLER">
+    	<xs:selector xpath="SELLERS/SELLER"/>
+    	<xs:field xpath="@SELLERref"/>
+	</xs:key>
+	<xs:key name="key_IMMOPRODUCT">
+    	<xs:selector xpath="IMMOPRODUCTS/IMMOPRODUCT"/>
+    	<xs:field xpath="@immoref"/>
+	</xs:key>
+	<xs:key name="key_PROSPECT">
+    	<xs:selector xpath="PROSPECTS/PROSPECT"/>
+    	<xs:field xpath="@proref"/>
+	</xs:key>
+	
+	<!-- Keyref for TRANSACTION--> 
+    <xs:keyref name="keyref_SELLER" refer="key_SELLER">
+        <xs:selector xpath="TRANSACTIONS/TRANSACTION"/>
+        <xs:field xpath="TRANSACTIONSELLER"/>
+    </xs:keyref>
+	<xs:keyref name="keyref_IMMOPRODUCT" refer="key_IMMOPRODUCT">
+        <xs:selector xpath="TRANSACTIONS/TRANSACTION"/>
+        <xs:field xpath="TRANSACTIONIMMOPRODUCT"/>
+    </xs:keyref>
+	<xs:keyref name="keyref_PROSPECT" refer="key_PROSPECT">
+        <xs:selector xpath="TRANSACTIONS/TRANSACTION"/>
+        <xs:field xpath="TRANSACTIONPROSPECT"/>
+    </xs:keyref>
+
+	<!-- Keyref for IMMOPRODUCT-->
+	<xs:keyref name="keyref_S" refer="key_SELLER">
+        <xs:selector xpath="IMMOPRODUCTS/IMMOPRODUCT"/>
+        <xs:field xpath="SELLERref"/>
+    </xs:keyref>
+	</xs:element>
+
+
+
+	<xs:element name="PROSPECTS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PROSPECT" type="PROSPECTtype" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="unique-prospect"> <!-- Creation of a prospection research with a unique identifier delivered by the platform ESTATEPLATEFORME and description of specific elements to charactarise research criteria -->
+			<xs:selector xpath="PROSPECT"/>
+			<xs:field xpath="@proref"/> <!-- Identification of a prospection reference  containing all the characteristics of one customer-->
+		</xs:unique>
+	</xs:element>
+	<xs:complexType name="PROSPECTtype"> <!-- Description of the complexe element prospect  based on postal/mail adress + desired customer criteria, https://www.w3schools.com/XML/schema_complex.asp-->
+		<xs:sequence> 
+			<xs:element name="STATUS" type="STATUStype"/> <!-- Title/statut of customer-->
+			<xs:element name="LastName" type="xs:string"/>
+			<xs:element name="FirstName" type="xs:string"/>
+			<xs:element ref="ADRESSE"/>
+			<xs:element name="CONTACTTEL" type="xs:string"/>
+			<xs:element name="CONTACTMAIL" type="xs:string"/>
+			<xs:element ref="CRITERIA"/> <!-- CRITERIA complexe element contains the research parameters wishes by customer in therme of rent/sale real-estate product-->
+		</xs:sequence>
+		<xs:attribute name="proref" type="xs:string"/>
+	</xs:complexType>
+	<xs:simpleType name="STATUStype">
+		<xs:restriction base="xs:string"> 
+			<xs:enumeration value="Mrs"/>
+			<xs:enumeration value="Mr"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ADRESSEtype">
+		<xs:sequence> 
+			<xs:element name="STREETNUMBER" type="xs:string"/> 
+			<xs:element name="STREETTYPE" type="xs:string"/>
+			<xs:element name="STREETNAME" type="xs:string"/>
+			<xs:element name="CITY" type="xs:string"/>
+			<xs:element name="AREA" type="xs:integer"/> <!-- Area=Zip code number-->
+			<xs:element name="COUNTRY" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CRITERIAtype"> <!-- The ELEMENTtype below define a specific choice answers for complex element as CRITERIA, in order avoid biais thank to mistake written during the transformation process-->
+		<xs:sequence>
+			<xs:element name="KINDOFTRANSACTION" type="KINDOFTRANSACTIONtype"/>  <!-- Rental/sales transaction wanted by customer-->
+			<xs:element ref="BUDGET"/> <!-- Maximum budget allocated by customer, the currency is inclued in the PRICE tag -->
+			<xs:element ref="AVAILIBILITY"/> <!-- Economic statut of the property product--> 
+			<xs:element name="TYPEOFBUILDING" type="TYPEOFBUILDINGtype"/> <!-- Nature of the property-->
+			<xs:element name="YEARSOFBUILDING" type="YEARSOFBUILDINGtype"/> 
+			<xs:element ref="SURFACE"/> <!-- Minimum surface wishes by customer-->
+			<xs:element name="ELEVATOR" type="ELEVATORtype"/>
+			<xs:element name="EXPOSITION" type="EXPOSITIONtype"/>
+			<xs:element name="SEAVIEW" type="SEAVIEWtype"/>
+			<xs:element name="DISPOSITION" type="DISPOSITIONtype"/>
+			<xs:element name="NUMBEROFROOM" type="NUMBEROFROOMtype"/>
+			<xs:element name="NUMBEROFBATHROOM" type="NUMBEROFBATHROOMtype"/>
+			<xs:element name="BATHORSHOWER" type="BATHORSHOWERtype"/> <!-- Prensence or abscence of a shower/bath/both -->
+			<xs:element name="SEPARATETOILET" type="SEPARATETOILETtype"/> <!-- Toilets in or out of the bathroom-->
+			<xs:element name="SEPARATEKITCHEN" type="SEPARATEKITCHENtype"/>  <!-- Prensence of opened or seperated kitchen -->
+			<xs:element name="FURNISHEDPROPERTY" type="FURNISHEDPROPERTYtype"/> <!-- Search for equipped and non-equipped properties -->
+			<xs:element name="CELLAR" type="CELLARtype"/>
+			<xs:element name="LEVEL" type="LEVELtype"/> <!-- The element indicate the floor of property that is to say  ground or elevated level -->
+			<xs:element name="CITYSEARCH" type="CITYSEARCHtype"/> <!-- Indication of the citylocalization-->
+			<xs:element name="ZONESEARCH" type="ZONESEARCHtype"/> <!-- Search area/perimeter close to desired target city-->
+			<xs:element ref="EXTERIORS"/> <!-- Description of exterior characteristics associated to real-estate product property from balcony to swimming pool and car parking...--> 
+			<xs:element ref="LOGISTICS"/> <!-- Elements list of principal logistic flux required for deplacement/emergency/life customer organizarion--> 
+			<xs:element name="CONCIERGE" type="CONCIERGEtype"/> <!--exitance of a concierge include in the real-state transaction-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="KINDOFTRANSACTIONtype">
+		<xs:restriction base="xs:string"> <!-- From XML Schema DATA Pipelines/DSTI and https://www.w3schools.com/XML/schema_facets.asp -->
+			<xs:enumeration value="Rent"/>
+			<xs:enumeration value="Buy"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PRICEtype">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="currency" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="BUDGETtype">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="currency" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>	
+		<xs:complexType name="AVAILIBILITYtype"> <!-- Entry and exit date for rent or only Entry date for sale -->
+		<xs:sequence> 
+			<xs:element name="ENTRY" type="ENTRYtype" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="EXIT" type="EXITtype" minOccurs="0" maxOccurs="unbounded"/> <!-- This tag indicates that entry is necessary for rent/sale but exit is just specific of EXIT rent-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="ENTRYtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}-\d{2}-\d{2}"/> <!-- This regex pattern means YYYY/MM/DD, as decribed by standard Iso 8601, https://fr.wikipedia.org/wiki/ISO_8601 -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EXITtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}-\d{2}-\d{2}"/> 
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TYPEOFBUILDINGtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="House"/>
+			<xs:enumeration value="Apartment"/>
+			<xs:enumeration value="House + Apartment"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="YEARSOFBUILDINGtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Old"/> <!-- before 1990's-->
+			<xs:enumeration value="Recent"/> <!-- 1990's to 2010's-->
+			<xs:enumeration value="New"/> <!-- after 2020's -->
+			<xs:enumeration value="None"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ELEVATORtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="SURFACEtype">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="Unit" type="xs:string" fixed="square meter"/> <!-- Unit inclusion in the surface tag-->
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="EXPOSITIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="North"/>
+			<xs:enumeration value="South"/>
+			<xs:enumeration value="East"/>
+			<xs:enumeration value="West"/>
+			<xs:enumeration value="None"/> <!-- None means not specified-->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SEAVIEWtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DISPOSITIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Star"/>
+			<xs:enumeration value="Square"/>
+			<xs:enumeration value="Rectangle"/>
+			<xs:enumeration value="Loft"/>
+			<xs:enumeration value="Duplex"/>
+			<xs:enumeration value="None"/> <!-- None means not specified-->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NUMBEROFROOMtype">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/> <!-- From XML Schema DATA Pipelines/DSTI and https://www.w3schools.com/xml/el_restriction.asp-->
+			<xs:maxInclusive value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NUMBEROFBATHROOMtype">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BATHORSHOWERtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Bath"/>
+			<xs:enumeration value="Shower"/>
+			<xs:enumeration value="Bath + Shower"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SEPARATETOILETtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SEPARATEKITCHENtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FURNISHEDPROPERTYtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CELLARtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="LEVELtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GroundLevel"/>
+			<xs:enumeration value="ElevatedLevel"/>
+			<xs:enumeration value="TopFloor"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CITYSEARCHtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="BEAULIEUX-SUR-MER"/>
+			<xs:enumeration value="CANNES"/>
+			<xs:enumeration value="NICE"/>
+			<xs:enumeration value="MANDELIEU-LA-NAPOULE"/>
+			<xs:enumeration value="MONACO"/>
+			<xs:enumeration value="VILLEFRANCHE-SUR-MER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ZONESEARCHtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Inf10KM"/>
+			<xs:enumeration value="UpTO20KM"/>
+			<xs:enumeration value="UpTO30KM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="EXTERIORStype">
+		<xs:sequence>
+			<xs:element name="EXTERIOR" type="EXTERIORtype"/>
+			<xs:element ref="PARKING"/>
+			<xs:element name="PARC" type="PARCtype"/>
+			<xs:element name="CHILDRENGAME" type="CHILDRENGAMEtype"/>
+			<xs:element name="SWIMMINGPOOL" type="SWIMMINGPOOLtype"/>
+			<xs:element name="SEAACCES" type="SEAACCESStype"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="EXTERIORtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Balcony"/>
+			<xs:enumeration value="Terrace"/>
+			<xs:enumeration value="Veranda"/>
+			<xs:enumeration value="Garden"/>
+			<xs:enumeration value="None"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PARKINGtype">
+		<xs:sequence>
+			<xs:element name="CARNUMBER" type="xs:integer"/>
+			<xs:element name="NATUREOFPARKING" type="NATUREOFPARKINGtype"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="NATUREOFPARKINGtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ExteriorParking"/>
+			<xs:enumeration value="UndergroundParking"/>
+			<xs:enumeration value="Box"/>
+			<xs:enumeration value="NO"/> <!-- NO means abscence-->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PARCtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CHILDRENGAMEtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SWIMMINGPOOLtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SEAACCESStype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LOGISTICStype"> <!--Principal flux organizations with the mention 1h or 30 min meaning the time by car driving -->
+		<xs:sequence>
+			<xs:element name="AEROPORTLESS1HOUR" type="AEROPORTLESS1HOURtype"/>
+			<xs:element name="TRAINSTATIONLESS1HOUR" type="TRAINSTATIONLESS1HOURtype"/>
+			<xs:element name="SEAPORTLESS1HOUR" type="SEAPORTLESS1HOURtype"/>
+			<xs:element name="HOSPITALLESS30MIN" type="HOSPITALLESS30MINtype"/>
+			<xs:element name="GAZSTATIONLESS30MIN" type="GAZSTATIONLESS30MINtype"/>
+			<xs:element name="BASICNECESSITIESCOMMERCES" type="BASICNECESSITIESCOMMERCEStype"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="AEROPORTLESS1HOURtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="TRAINSTATIONLESS1HOURtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SEAPORTLESS1HOURtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="HOSPITALLESS30MINtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GAZSTATIONLESS30MINtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="BASICNECESSITIESCOMMERCEStype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CONCIERGEtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+
+	<xs:element name="IMMOPRODUCTS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="IMMOPRODUCT" type="IMMOPRODUCTtype" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="unique-immoproduct"> <!-- Creation of a property proposition for sale/rent with a unique identifier delivered by the platform ESTATEPLATEFORME and a description of properties of product -->
+			<xs:selector xpath="IMMOPRODUCT"/>
+			<xs:field xpath="@immoref"/> <!-- Identification of a real estate reference containing all the characteristics of the product-->
+		</xs:unique>
+	</xs:element> 
+	<xs:complexType name="IMMOPRODUCTtype">
+		<xs:sequence>
+			<xs:element name="SELLERref" type="xs:string"/> <!-- Seller's key reference-->
+			<xs:element name="IMMOTRANSACTION" type="IMMOTRANSACTIONtype"/> <!-- Rental/sales transaction saled by agencey or owner -->
+			<xs:element name="IMMOSTATUS" type="IMMOSTATUStype"/> <!-- Economic statut of the transaction of property--> 
+			<xs:element name="IMMONATURE" type="IMMONATUREtype"/> <!-- Building type of product--> 
+			<xs:element name="IMMOYEAR" type="IMMOYEARtype"/> <!-- Year of building-->
+			<xs:element name="IMMOPRICE" type="IMMOPRICEtype"/> <!-- Price before negociation--> 
+			<xs:element name="IMMOADRESS" type="IMMOADRESStype"/> <!-- Seller's postale address-->
+			<xs:element ref="DESCRIPTIF"/> <!-- Description of characteristics of property-->
+		</xs:sequence>
+		<xs:attribute name="immoref" type="xs:string"/>
+	</xs:complexType>
+	<xs:simpleType name="IMMOTRANSACTIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Rent"/>
+			<xs:enumeration value="Sale"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSTATUStype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Free"/>
+			<xs:enumeration value="UnderOffer"/>
+			<xs:enumeration value="Sold"/> 
+			<xs:enumeration value="Rented"/> 			
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMONATUREtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Apartment"/>
+			<xs:enumeration value="House"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOYEARtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Old"/> <!-- before 1990's-->
+			<xs:enumeration value="Recent"/> <!-- 1990's to 2010's-->
+			<xs:enumeration value="New"/> <!-- after 2020's -->
+			<xs:enumeration value="None"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="IMMOPRICEtype"> <!--The rental price corresponds to one week during the summer or one month from October to June-->
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="currency" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="IMMOADRESStype">
+		<xs:sequence>
+		
+			<xs:element name="IMMOSTREETNUMBER" type="xs:string"/>
+			<xs:element name="IMMOSTREETTYPE" type="xs:string"/>
+			<xs:element name="IMMOSTREETNAME" type="xs:string"/>
+			<xs:element name="IMMOCITY" type="xs:string"/>
+			<xs:element name="IMMOAREA" type="xs:integer"/> <!-- Area=Zip code number-->
+			<xs:element name="IMMOCOUNTRY" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="DESCRIPTIFtype">
+		<xs:sequence>
+			<xs:element ref="IMMOAVAILIBILITY"/>
+			<xs:element name="IMMOSURFACE" type="IMMOSURFACEtype"/>
+			<xs:element name="IMMOELEVATOR" type="IMMOELEVATORtype"/>
+			<xs:element name="IMMOEXPOSITION" type="IMMOEXPOSITIONtype"/>
+			<xs:element name="IMMOSEAVIEW" type="IMMOSEAVIEWtype"/>
+			<xs:element name="IMMODISPOSITION" type="IMMODISPOSITIONtype"/>
+			<xs:element name="IMMONUMBEROFROOM" type="IMMONUMBEROFROOMtype"/> <!-- Based this following hypothesis on the number of beds: 1 room for 2 people, 2 rooms for 4 people, 3 rooms for 6 people...-->
+			<xs:element name="IMMONUMBEROFBATHROOM" type="IMMONUMBEROFBATHROOMtype"/>
+			<xs:element name="IMMOBATHORSHOWER" type="IMMOBATHORSHOWERtype"/>
+			<xs:element name="IMMOSEPARATETOILET" type="IMMOSEPARATETOILETtype"/>
+			<xs:element name="IMMOSEPARATEKITCHEN" type="IMMOSEPARATEKITCHENtype"/>
+			<xs:element name="IMMOFURNISHEDPROPERTY" type="IMMOFURNISHEDPROPERTYtype"/>
+			<xs:element name="IMMOCELLAR" type="IMMOCELLARtype"/>
+			<xs:element name="IMMOLEVEL" type="IMMOLEVELtype"/> 
+			<xs:element ref="IMMOEXTERIORS"/>
+			<xs:element ref="IMMOLOGISTICS"/>
+			<xs:element name="IMMOCONCIERGE" type="IMMOCONCIERGEtype"/>
+		</xs:sequence>
+	</xs:complexType>
+		<xs:complexType name="IMMOAVAILIBILITYtype"> <!-- Entry and exit date for rent or only Entry date for sale -->
+		<xs:sequence> 
+			<xs:element name="IMMOENTRY" type="IMMOENTRYtype" minOccurs="1" maxOccurs="unbounded"/>
+			<xs:element name="IMMOEXIT" type="IMMOEXITtype" minOccurs="0" maxOccurs="unbounded"/> <!-- This tag indicates that entry is necessary for rent/sale but exit is just specific of EXIT rent-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="IMMOENTRYtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}-\d{2}-\d{2}"/> <!-- This regex pattern means YYYY/MM/DD, as decribed by standard Iso 8601, https://fr.wikipedia.org/wiki/ISO_8601 -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOEXITtype">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}-\d{2}-\d{2}"/> 
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="IMMOSURFACEtype">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="Unit" type="xs:string" fixed="square meter"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="IMMOELEVATORtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOEXPOSITIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="North"/>
+			<xs:enumeration value="South"/>
+			<xs:enumeration value="East"/>
+			<xs:enumeration value="West"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSEAVIEWtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMODISPOSITIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Star"/>
+			<xs:enumeration value="Square"/>
+			<xs:enumeration value="Rectangle"/>
+			<xs:enumeration value="Loft"/>
+			<xs:enumeration value="Duplex"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMONUMBEROFROOMtype"> 
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMONUMBEROFBATHROOMtype">
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOBATHORSHOWERtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Bath"/>
+			<xs:enumeration value="Shower"/>
+			<xs:enumeration value="Bath + Shower"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSEPARATETOILETtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSEPARATEKITCHENtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOFURNISHEDPROPERTYtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOCELLARtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOLEVELtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GroundLevel"/>
+			<xs:enumeration value="ElevatedLevel"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="IMMOEXTERIORStype">
+		<xs:sequence>
+			<xs:element name="IMMOEXTERIOR" type="IMMOEXTERIORtype"/>
+			<xs:element ref="IMMOPARKING"/>
+			<xs:element name="IMMOPARC" type="IMMOPARCtype"/>
+			<xs:element name="IMMOCHILDRENGAME" type="IMMOCHILDRENGAMEtype"/>
+			<xs:element name="IMMOSWIMMINGPOOL" type="IMMOSWIMMINGPOOLtype"/>
+			<xs:element name="IMMOSEAACCES" type="IMMOSEAACCESStype"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="IMMOEXTERIORtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Balcony"/>
+			<xs:enumeration value="Terrace"/>
+			<xs:enumeration value="Veranda"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="IMMOPARKINGtype">
+		<xs:sequence>
+			<xs:element name="IMMOCARNUMBER" type="xs:integer"/>
+			<xs:element name="IMMONATUREOFPARKING" type="IMMONATUREOFPARKINGtype"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="IMMONATUREOFPARKINGtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ExteriorParking"/>
+			<xs:enumeration value="UndergroundParking"/>
+			<xs:enumeration value="Box"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOPARCtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOCHILDRENGAMEtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSWIMMINGPOOLtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSEAACCESStype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="IMMOLOGISTICStype">
+		<xs:sequence>
+			<xs:element name="IMMOAEROPORTLESS1HOUR" type="IMMOAEROPORTLESS1HOURtype"/>
+			<xs:element name="IMMOTRAINSTATIONLESS1HOUR" type="IMMOTRAINSTATIONLESS1HOURtype"/>
+			<xs:element name="IMMOSEAPORTLESS1HOUR" type="IMMOSEAPORTLESS1HOURtype"/>
+			<xs:element name="IMMOHOSPITALLESS30MIN" type="IMMOHOSPITALLESS30MINtype"/>
+			<xs:element name="IMMOGAZSTATIONLESS30MIN" type="IMMOGAZSTATIONLESS30MINtype"/>
+			<xs:element name="IMMOBASICNECESSITIESCOMMERCES" type="IMMOBASICNECESSITIESCOMMERCEStype"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="IMMOAEROPORTLESS1HOURtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOTRAINSTATIONLESS1HOURtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOSEAPORTLESS1HOURtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOHOSPITALLESS30MINtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOGAZSTATIONLESS30MINtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOBASICNECESSITIESCOMMERCEStype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IMMOCONCIERGEtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+
+	<xs:element name="SUPPLIERS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SUPPLIER" type="SUPPLIERtype" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="unique-SUPPLIER"> <!-- Creation of a Supplier offer with a unique identifier delivered by the platform ESTATEPLATEFORME and description of it technical specificity -->
+			<xs:selector xpath="SUPPLIER"/>
+			<xs:field xpath="@SUPPLIERref"/> <!-- Identification of a supplier reference containing all the intervention characteristics -->
+		</xs:unique>
+	</xs:element>
+	<xs:complexType name="SUPPLIERtype">
+		<xs:sequence>
+			<xs:element name="SUPPLIERNAME" type="xs:string"/> 
+			<xs:element name="SUPPLIERMAIL" type="xs:string"/> <!-- Supplier's mail adress-->
+			<xs:element name="SUPPLIERTEL" type="xs:string"/> <!-- Supplier's telephone number-->
+			<xs:element ref="SUPPLIERADRESSE"/> <!-- Supplier's postale adress-->
+			<xs:element name="SUPPLIERSIRET" type="xs:string"/> <!-- Supplier siret number-->
+			<xs:element name="SUPPLIERACTIVITY" type="SUPPLIERACTIVITYtype"/> <!--Supplier's technical specificity -->
+			<xs:element name="SUPPLIERPRESTATION" type="SUPPLIERPRESTATIONtype"/> <!--Quality of the supplier's intervention in terms of materials and availability -->
+			<xs:element name="SUPPLIERZONEINTERVENTION" type="SUPPLIERZONEINTERVENTIONtype"/> <!-- City of intervention provided by the supplier-->
+			<xs:element name="ZONEFLEXIBILITY" type="ZONEFLEXIBILITYtype"/> <!-- Work Area/perimeter close to city of intervention -->
+			<xs:element name="SUPPLIERHOURSINTERVENTION" type="SUPPLIERHOURSINTERVENTIONtype"/>  <!-- This element allow to know if the supplier present hourly on call duty --> 
+		</xs:sequence>
+		<xs:attribute name="SUPPLIERref" type="xs:string"/>
+	</xs:complexType>
+	<xs:complexType name="SUPPLIERADRESSEtype">
+		<xs:sequence>
+			<xs:element name="STREETNUMBER" type="xs:string"/>
+			<xs:element name="STREETTYPE" type="xs:string"/>
+			<xs:element name="STREETNAME" type="xs:string"/>
+			<xs:element name="CITY" type="xs:string"/>
+			<xs:element name="AREA" type="xs:integer"/> <!-- Area=Zip code number-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="SUPPLIERACTIVITYtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Concierge"/>
+			<xs:enumeration value="Electrician"/>
+			<xs:enumeration value="Mason"/>
+			<xs:enumeration value="Locksmith"/>
+			<xs:enumeration value="HeatingEngineer"/>
+			<xs:enumeration value="Storist"/>
+			<xs:enumeration value="Glazier"/>
+			<xs:enumeration value="HouseKeeper"/>
+			<xs:enumeration value="Gardener"/>
+			<xs:enumeration value="Renovation"/>
+			<xs:enumeration value="Syndic"/>
+			<xs:enumeration value="AirConditioningRepairer"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SUPPLIERPRESTATIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Premium"/> <!-- intervention with high quality of materials+ flexibility on the hours-->
+			<xs:enumeration value="Classic"/> <!-- intervention with classic quality of materials+ little flexibility on the hours-->
+			<xs:enumeration value="Eco"/> <!-- intervention with classic quality of materials+ no flexibility on the hours-->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SUPPLIERZONEINTERVENTIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CANNES"/>
+			<xs:enumeration value="NICE"/>
+			<xs:enumeration value="MONACO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ZONEFLEXIBILITYtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Inf10KM"/>
+			<xs:enumeration value="UpTO20KM"/>
+			<xs:enumeration value="UpTO30KM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SUPPLIERHOURSINTERVENTIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NoHourlyOnCallDuty"/> 
+			<xs:enumeration value="HourlyOnCallDuty"/>
+		</xs:restriction>
+	</xs:simpleType> 
+
+
+
+	<xs:element name="SELLERS"> <!-- The seller is the party offering to rent or sell a property to a future customer, both of whom are linked by a contract -->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SELLER" type="SELLERtype" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="unique-SELLER"> <!-- Creation of a Supplier offer with a unique identifier delivered by the platform ESTATEPLATEFORME and description of it technical specificity -->
+			<xs:selector xpath="SELLER"/>
+			<xs:field xpath="@SELLERref"/> <!-- Identification of a supplier reference containing all the intervention characteristics -->
+		</xs:unique>
+	</xs:element>
+	<xs:complexType name="SELLERtype">
+		<xs:sequence>
+			<xs:element name="SELLERNAME" type="xs:string"/>
+			<xs:element name="SELLEREMAIL" type="xs:string"/> <!-- Supplier's mail adress-->
+			<xs:element name="SELLERTEL" type="xs:string"/> <!-- Supplier's telephone number-->
+			<xs:element ref="SELLERADRESSE"/> <!-- Supplier's postale adress-->
+			<xs:element name="SELLERSIRET" type="xs:string" minOccurs="0"/> <!-- Supplier siret number-->
+			<xs:element name="SELLERCATCHEMENTAREA" type="SELLERCATCHEMENTAREAlist"/> <!-- Sellers' catchement area define by a list. https://www.w3schools.com/xml/el_list.asp  -->
+			<xs:element name="SELLERSUBSCRIPTION" type="SELLERSUBSCRIPTIONtype"/> <!-- Sellers' subscription to the platform-->
+			<xs:element name="SELLERPAIDOPTION" type="SELLERPAIDOPTIONtype" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="SELLERref" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="SELLERADRESSEtype">
+		<xs:sequence>
+			<xs:element name="STREETNUMBER" type="xs:string"/>
+			<xs:element name="STREETTYPE" type="xs:string"/>
+			<xs:element name="STREETNAME" type="xs:string"/>
+			<xs:element name="CITY" type="xs:string"/>
+			<xs:element name="AREA" type="xs:integer"/> <!-- Area=Zip code number-->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="SELLERCATCHEMENTAREAlist">
+		<xs:list itemType="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="SELLERSUBSCRIPTIONtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="YES"/>
+			<xs:enumeration value="NO"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="SELLERPAIDOPTIONtype">
+		<xs:sequence>
+        	<xs:element name="OPTION" type="OPTIONtype" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="OPTIONtype">
+    <xs:restriction base="xs:string">
+        <xs:enumeration value="Extra Photos"/>
+        <xs:enumeration value="AI-Powered Targeting"/>
+		<xs:enumeration value="Automatic Document Generation"/>
+		<xs:enumeration value="AI-Powered Pricing"/>
+		<xs:enumeration value="virtual tour"/>		
+    </xs:restriction>
+	</xs:simpleType>
+
+
+
+	<xs:element name="TRANSACTIONS">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="TRANSACTION" type="TRANSACTIONtype" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="unique-TRANSACTION"> <!-- Creation of a TRANSACTION with a unique identifier delivered by the platform ESTATEPLATEFORME and description of it technical specificity -->
+			<xs:selector xpath="TRANSACTION"/>
+			<xs:field xpath="@TRANSACTIONref"/> <!-- Identification of a TRANSACTIONS reference containing all the intervention characteristics -->
+		</xs:unique>
+	</xs:element>
+	<xs:complexType name="TRANSACTIONtype">
+		<xs:sequence>
+			<xs:element name="TRANSACTIONDATE" type="xs:date"/>
+			<xs:element name="TRANSACTIONSELLER" type="xs:string"/> <!-- Unique-SELLER -->
+			<xs:element name="TRANSACTIONPROSPECT" type="xs:string"/> <!-- Unique-prospect -->
+			<xs:element name="TRANSACTIONIMMOPRODUCT" type="xs:string"/> <!-- Unique-immoproduct -->
+			<xs:element name="TRANSACTIONINFO" type="TRANSACTIONINFOtype"/> <!-- Rent or Sale -->
+			<xs:element name="TRANSACTIONAMOUNT" type="TRANSACTIONAMOUNTtype"/> <!-- Amount of the transaction  --> <!-- no Keyref for TRANSACTIONAMOUNT because the price can be negotiated-->
+			<xs:element name="TRANSACTIONMETHOD" type="TRANSACTIONMETHODtype"/> <!-- Check, bank transfer, payment in installments -->
+		</xs:sequence>
+		<xs:attribute name="TRANSACTIONref" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="TRANSACTIONMETHODtype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="check"/>
+			<xs:enumeration value="bank transfer"/>
+			<xs:enumeration value="payment in installments"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="TRANSACTIONINFOtype"> 
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Rent"/>
+			<xs:enumeration value="Sale"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TRANSACTIONAMOUNTtype">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="currency" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+</xs:schema>

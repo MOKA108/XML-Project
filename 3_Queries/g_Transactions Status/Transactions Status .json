@@ -1,0 +1,152 @@
+
+    {
+    "TotalTransactionAmount": "16748250",
+    "TotalSalesAmount": "16624000",
+    "TotalRentAmount": "124250",
+    "ProspectsWithTransactions": [
+        "P1","P2","P3","P5","P9","P10","P11","P13","P15","P17","P18","P19","P20","P21","P22","P23","P25","P26","P29","P30"
+    ],
+    "DetailedProspects": [
+        
+            {
+                "id": "P1",
+                "name": "DuChemin Pauline",
+                "TotalSpent": "5562000",
+                "TransactionCount": "2",
+                "TransactionIds": ["T11","T20"]
+            },
+            {
+                "id": "P2",
+                "name": "RONDET Damien",
+                "TotalSpent": "4000",
+                "TransactionCount": "2",
+                "TransactionIds": ["T21","T24"]
+            },
+            {
+                "id": "P3",
+                "name": "BERTHEAU Marie Caroline",
+                "TotalSpent": "450000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T10"]
+            },
+            {
+                "id": "P5",
+                "name": "LE PAPE Ronald",
+                "TotalSpent": "4200000",
+                "TransactionCount": "3",
+                "TransactionIds": ["T2","T3","T4"]
+            },
+            {
+                "id": "P9",
+                "name": "GILLETTE Pierre",
+                "TotalSpent": "550000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T7"]
+            },
+            {
+                "id": "P10",
+                "name": "MICHU Claudine",
+                "TotalSpent": "600000",
+                "TransactionCount": "2",
+                "TransactionIds": ["T8","T9"]
+            },
+            {
+                "id": "P11",
+                "name": "MAUROIS Andrea",
+                "TotalSpent": "550000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T12"]
+            },
+            {
+                "id": "P13",
+                "name": "BERGOGLIO Anabelle",
+                "TotalSpent": "189000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T6"]
+            },
+            {
+                "id": "P15",
+                "name": "MANCINI Luis",
+                "TotalSpent": "2550000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T5"]
+            },
+            {
+                "id": "P17",
+                "name": "FLAMEL Nicolas",
+                "TotalSpent": "652000",
+                "TransactionCount": "2",
+                "TransactionIds": ["T13","T34"]
+            },
+            {
+                "id": "P18",
+                "name": "HO Geraldine",
+                "TotalSpent": "3500",
+                "TransactionCount": "1",
+                "TransactionIds": ["T32"]
+            },
+            {
+                "id": "P19",
+                "name": "GERARD Christian",
+                "TotalSpent": "2000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T35"]
+            },
+            {
+                "id": "P20",
+                "name": "LEVERT Vanessa",
+                "TotalSpent": "452400",
+                "TransactionCount": "3",
+                "TransactionIds": ["T14","T28","T29"]
+            },
+            {
+                "id": "P21",
+                "name": "LAVIGNE Ernest",
+                "TotalSpent": "3400",
+                "TransactionCount": "1",
+                "TransactionIds": ["T33"]
+            },
+            {
+                "id": "P22",
+                "name": "SIBONY Laura",
+                "TotalSpent": "2000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T25"]
+            },
+            {
+                "id": "P23",
+                "name": "LAMENTIN Emmanuel",
+                "TotalSpent": "8000",
+                "TransactionCount": "3",
+                "TransactionIds": ["T22","T23","T30"]
+            },
+            {
+                "id": "P25",
+                "name": "ALCINDOR Lou",
+                "TotalSpent": "2000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T26"]
+            },
+            {
+                "id": "P26",
+                "name": "GUYOMARCH Gwenael",
+                "TotalSpent": "485950",
+                "TransactionCount": "2",
+                "TransactionIds": ["T15","T27"]
+            },
+            {
+                "id": "P29",
+                "name": "SIMONET Albertine",
+                "TotalSpent": "412000",
+                "TransactionCount": "5",
+                "TransactionIds": ["T1","T16","T17","T18","T19"]
+            },
+            {
+                "id": "P30",
+                "name": "AGOSTINELLI Alfred",
+                "TotalSpent": "70000",
+                "TransactionCount": "1",
+                "TransactionIds": ["T31"]
+            }
+    ]
+    }
