@@ -78,7 +78,7 @@ Each section uses **unique keys** and **foreign key references** to ensure data 
 - Schema – XML Schema Definition (XSD)  
 - Database – Sample XML database  
 - Queries – XSLT files for HTML/JSON transformations, Python scripts for data extraction, Generated HTML / JSON / XML result files  
-- Report - 
+- Report 
 
 ---
 
