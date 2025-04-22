@@ -69,7 +69,7 @@ Each section uses **unique keys** and **foreign key references** to ensure data 
 - Marie-Caroline Bertheau  
 - Arnaud G.  
 - Ronald L.
-- Damien R. 
+- Damien Rondet 
 
 ---
 
